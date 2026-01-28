@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasher’s Hub | Next-Gen Proxy</title>
+    <title>Dasher’s Hub | Proxy</title>
     <script src="uv/uv.bundle.js" defer></script>
     <script src="uv/uv.config.js" defer></script>
     <script src="index.js" defer></script>
@@ -11,103 +11,120 @@
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Staatliches&display=swap');
 
         :root {
-            --accent: #ff0055;
-            --bg: #0a0a0a;
-            --panel: #151515;
-            --text: #ffffff;
+            --accent: #ff0055; --bg: #0a0a0a; --panel: #151515; --text: #ffffff;
         }
 
-        /* --- THEME CLASSES --- */
-        .theme-christmas { --accent: #ff3e3e; --panel: #145a32; --bg: #051a0d; }
-        .theme-cyber     { --accent: #bc00ff; --panel: #1a002e; --bg: #0a0014; }
+        /* THEME CLASSES (From your old_demo.html) */
+        body.theme-christmas { --accent: #ff3e3e; --panel: #145a32; --bg: #051a0d; }
+        body.theme-cyber     { --accent: #bc00ff; --panel: #1a002e; --bg: #0a0014; }
+        body.theme-lava      { --accent: #ff4400; --panel: #2e0d00; --bg: #140600; }
+        body.theme-toxic     { --accent: #a2ff00; --panel: #142200; --bg: #090f00; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--bg); color: var(--text);
             font-family: 'Staatliches', sans-serif; overflow: hidden;
+            transition: 0.5s ease;
         }
 
-        /* Background Decoration */
-        .faded-bar {
-            position: fixed; top: 0; left: 25%; width: 400px; height: 150%;
-            background: var(--accent); opacity: 0.1; transform: rotate(15deg) translateY(-20%);
-            z-index: -1; transition: 0.5s;
-        }
-
-        /* Main Layout */
-        .container {
+        /* PAGE SYSTEM */
+        .page {
+            position: absolute; width: 100%; height: 100%;
+            transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; text-align: center;
         }
+        #main-page { left: 0; }
+        #theme-page { left: 100%; }
 
+        .view-themes #main-page { transform: translateX(-100%); }
+        .view-themes #theme-page { transform: translateX(-100%); }
+
+        /* BRANDING */
         .branding h1 {
-            font-family: 'Black Ops One', system-ui; font-size: clamp(3rem, 10vw, 6rem); 
+            font-family: 'Black Ops One'; font-size: clamp(3rem, 10vw, 6rem); 
             margin: 0; color: var(--accent); text-shadow: 4px 4px 0px #fff;
-            animation: glow 3s infinite alternate;
         }
 
-        @keyframes glow { from { filter: drop-shadow(0 0 5px var(--accent)); } to { filter: drop-shadow(0 0 20px var(--accent)); } }
-
-        /* THE PROXY INPUT */
-        .search-container {
-            margin-top: 30px; width: 90%; max-width: 600px;
-        }
-
+        /* PROXY INPUT */
         #uv-form input {
-            width: 100%; background: var(--panel); border: 3px solid var(--accent);
-            padding: 20px; color: white; font-family: 'Staatliches';
-            font-size: 1.5rem; border-radius: 15px; outline: none;
-            box-sizing: border-box; transition: 0.3s;
+            width: 100%; max-width: 600px; background: var(--panel); border: 3px solid var(--accent);
+            padding: 20px; color: white; font-family: 'Staatliches'; font-size: 1.5rem;
+            border-radius: 15px; outline: none; margin-top: 30px;
         }
 
-        #uv-form input:focus {
-            box-shadow: 0 0 25px var(--accent); transform: scale(1.02);
-        }
-
-        .nav-buttons {
-            margin-top: 20px; display: flex; gap: 15px;
-        }
-
-        .btn {
+        .nav-button {
             background: var(--panel); color: white; border: none;
-            padding: 10px 30px; font-family: 'Staatliches'; font-size: 1.2rem;
-            cursor: pointer; border-bottom: 4px solid var(--accent); transition: 0.2s;
+            padding: 15px 40px; font-size: 1.5rem; font-family: 'Staatliches';
+            cursor: pointer; border-right: 8px solid var(--accent); transition: 0.3s;
+            margin-top: 20px;
         }
+        .nav-button:hover { background: var(--accent); color: black; }
 
-        .btn:hover { background: var(--accent); color: black; transform: translateY(-3px); }
+        /* THEME SLIDER */
+        .theme-slider { display: flex; align-items: center; gap: 40px; }
+        .arrow { font-size: 5rem; cursor: pointer; color: var(--accent); user-select: none; }
     </style>
 </head>
 <body>
 
-    <div class="faded-bar"></div>
-
-    <div class="container">
+    <div id="main-page" class="page">
         <div class="branding">
             <h1>DASHER'S HUB</h1>
-            <p style="letter-spacing: 2px; opacity: 0.8;">VIRTUAL BROWSER INSTANCE</p>
+            <p style="text-align: center; letter-spacing: 3px; opacity: 0.7;">PROXY INSTANCE</p>
         </div>
 
-        <div class="search-container">
-            <form id="uv-form">
-                <input id="uv-address" type="text" placeholder="Enter URL or Search Query..." autocomplete="off">
-            </form>
-        </div>
+        <form id="uv-form">
+            <input id="uv-address" type="text" placeholder="Search the web..." autocomplete="off">
+        </form>
 
-        <div class="nav-buttons">
-            <button class="btn" onclick="location.reload()">Reload</button>
-            <button class="btn" onclick="window.location.href='/settings.html'">Settings</button>
+        <button class="nav-button" onclick="document.body.classList.add('view-themes')">Settings / Themes</button>
+    </div>
+
+    <div id="theme-page" class="page">
+        <h2 style="font-size: 3rem; color: var(--accent);">SELECT THEME</h2>
+        <div class="theme-slider">
+            <div class="arrow" onclick="changeTheme(-1)">❮</div>
+            <div style="text-align:center">
+                <h2 id="theme-name" style="font-size: 4rem; margin: 20px 0;">Neon Pink</h2>
+                <button class="nav-button" style="border: none; background: var(--accent); color: black;" onclick="document.body.classList.remove('view-themes')">CONFIRM</button>
+            </div>
+            <div class="arrow" onclick="changeTheme(1)">❯</div>
         </div>
-        
-        <p id="uv-error" style="color: var(--accent); margin-top: 15px; font-family: monospace;"></p>
     </div>
 
     <script>
-        // Simple theme switcher listener if you want to expand later
-        const themes = ['theme-cyber', 'theme-christmas'];
-        let currentTheme = 0;
-        
-        // This script ensures that when you press enter, 
-        // the proxy's internal logic takes over correctly.
+        const themes = [
+            {n:"Neon Pink", c:""}, 
+            {n:"Christmas", c:"theme-christmas"}, 
+            {n:"Cyber", c:"theme-cyber"}, 
+            {n:"Lava", c:"theme-lava"}, 
+            {n:"Toxic", c:"theme-toxic"}
+        ];
+        let tIdx = 0;
+
+        function changeTheme(dir) {
+            // Remove old theme
+            if (themes[tIdx].c) document.body.classList.remove(themes[tIdx].c);
+            
+            tIdx = (tIdx + dir + themes.length) % themes.length;
+            
+            // Add new theme
+            if (themes[tIdx].c) document.body.classList.add(themes[tIdx].c);
+            document.getElementById('theme-name').innerText = themes[tIdx].n;
+            
+            // Save to browser memory
+            localStorage.setItem('dasher-theme', tIdx);
+        }
+
+        // Load saved theme on startup
+        window.onload = () => {
+            const saved = localStorage.getItem('dasher-theme');
+            if (saved) {
+                tIdx = parseInt(saved);
+                if (themes[tIdx].c) document.body.classList.add(themes[tIdx].c);
+                document.getElementById('theme-name').innerText = themes[tIdx].n;
+            }
+        };
     </script>
 </body>
 </html>
