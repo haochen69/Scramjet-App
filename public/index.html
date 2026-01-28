@@ -11,120 +11,192 @@
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Staatliches&display=swap');
 
         :root {
-            --accent: #ff0055; --bg: #0a0a0a; --panel: #151515; --text: #ffffff;
+            --accent: #ff0055;
+            --bg: #0a0a0a;
+            --panel: #151515;
+            --text: #ffffff;
         }
 
-        /* THEME CLASSES (From your old_demo.html) */
-        body.theme-christmas { --accent: #ff3e3e; --panel: #145a32; --bg: #051a0d; }
-        body.theme-cyber     { --accent: #bc00ff; --panel: #1a002e; --bg: #0a0014; }
-        body.theme-lava      { --accent: #ff4400; --panel: #2e0d00; --bg: #140600; }
-        body.theme-toxic     { --accent: #a2ff00; --panel: #142200; --bg: #090f00; }
+        /* --- THEME CLASSES --- */
+        .theme-christmas { --accent: #ff3e3e; --panel: #145a32; --bg: #051a0d; }
+        .theme-cyber     { --accent: #bc00ff; --panel: #1a002e; --bg: #0a0014; }
+        .theme-lava      { --accent: #ff4400; --panel: #2e0d00; --bg: #140600; }
+        .theme-toxic     { --accent: #a2ff00; --panel: #142200; --bg: #090f00; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--bg); color: var(--text);
             font-family: 'Staatliches', sans-serif; overflow: hidden;
-            transition: 0.5s ease;
+            transition: background-color 0.5s ease;
         }
 
-        /* PAGE SYSTEM */
+        .faded-bar {
+            position: fixed; top: 0; left: 25%; width: 400px; height: 150%;
+            background: var(--accent); opacity: 0.1; transform: rotate(15deg) translateY(-20%);
+            z-index: -1; transition: background 0.5s ease;
+        }
+
+        /* --- PAGE SYSTEM --- */
         .page {
             position: absolute; width: 100%; height: 100%;
             transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        #main-page { left: 0; }
-        #theme-page { left: 100%; }
+        #main-page { left: 0; align-items: flex-start; }
+        #proxy-page { left: 100%; }
+        #theme-page { left: 200%; }
 
-        .view-themes #main-page { transform: translateX(-100%); }
-        .view-themes #theme-page { transform: translateX(-100%); }
+        .view-proxy #main-page { transform: translateX(-100%); }
+        .view-proxy #proxy-page { transform: translateX(-100%); }
+        .view-themes #main-page { transform: translateX(-200%); }
+        .view-themes #theme-page { transform: translateX(-200%); }
 
-        /* BRANDING */
+        /* --- BRANDING --- */
+        .branding {
+            position: absolute; top: 15%; left: 6%; z-index: 10;
+        }
         .branding h1 {
-            font-family: 'Black Ops One'; font-size: clamp(3rem, 10vw, 6rem); 
-            margin: 0; color: var(--accent); text-shadow: 4px 4px 0px #fff;
+            font-family: 'Black Ops One'; font-size: clamp(4rem, 10vw, 7.5rem); 
+            margin: 0; color: var(--accent); text-shadow: 6px 6px 0px #fff; 
         }
 
-        /* PROXY INPUT */
-        #uv-form input {
-            width: 100%; max-width: 600px; background: var(--panel); border: 3px solid var(--accent);
-            padding: 20px; color: white; font-family: 'Staatliches'; font-size: 1.5rem;
-            border-radius: 15px; outline: none; margin-top: 30px;
-        }
-
+        /* --- BUTTONS --- */
         .nav-button {
             background: var(--panel); color: white; border: none;
-            padding: 15px 40px; font-size: 1.5rem; font-family: 'Staatliches';
-            cursor: pointer; border-right: 8px solid var(--accent); transition: 0.3s;
-            margin-top: 20px;
+            padding: 18px 0; font-size: 1.8rem; font-family: 'Staatliches';
+            cursor: pointer; clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
+            transition: 0.3s; width: 260px; text-align: center;
+            padding-left: 30px; border-right: 8px solid var(--accent);
         }
-        .nav-button:hover { background: var(--accent); color: black; }
+        .nav-button:hover { width: 310px; background: var(--accent); color: black; }
 
-        /* THEME SLIDER */
-        .theme-slider { display: flex; align-items: center; gap: 40px; }
-        .arrow { font-size: 5rem; cursor: pointer; color: var(--accent); user-select: none; }
+        /* --- PROXY SEARCH BAR --- */
+        #uv-form { width: 100%; max-width: 800px; margin-top: 20px; }
+        #uv-address {
+            width: 100%; background: rgba(255,255,255,0.05); border: 3px solid var(--accent);
+            padding: 20px 30px; color: white; font-family: 'Staatliches';
+            font-size: 2rem; border-radius: 50px; outline: none; transition: 0.3s;
+        }
+        #uv-address:focus { box-shadow: 0 0 30px var(--accent); background: rgba(0,0,0,0.8); }
+
+        #fx-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 5; }
     </style>
 </head>
 <body>
 
+    <canvas id="fx-canvas"></canvas>
+    <div class="faded-bar"></div>
+
     <div id="main-page" class="page">
         <div class="branding">
-            <h1>DASHER'S HUB</h1>
-            <p style="text-align: center; letter-spacing: 3px; opacity: 0.7;">PROXY INSTANCE</p>
+            <h1>Dasher’s<br>Hub</h1>
+            <p style="margin-top: 10px; letter-spacing: 2px;">VIRTUAL INSTANCE</p>
         </div>
+        <nav style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; align-items: flex-end; z-index: 20;">
+            <button class="nav-button" onclick="showPage('view-proxy')">Proxy</button>
+            <button class="nav-button" onclick="showPage('view-themes')">Themes</button>
+        </nav>
+    </div>
 
+    <div id="proxy-page" class="page">
+        <h2 style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;">WEB PROXY</h2>
         <form id="uv-form">
-            <input id="uv-address" type="text" placeholder="Search the web..." autocomplete="off">
+            <input id="uv-address" type="text" placeholder="Enter URL or Search Query..." autocomplete="off">
         </form>
-
-        <button class="nav-button" onclick="document.body.classList.add('view-themes')">Settings / Themes</button>
+        <button class="nav-button" style="width:200px; padding-left:0; margin-top:30px;" onclick="showPage('')">❮ BACK</button>
     </div>
 
     <div id="theme-page" class="page">
-        <h2 style="font-size: 3rem; color: var(--accent);">SELECT THEME</h2>
-        <div class="theme-slider">
-            <div class="arrow" onclick="changeTheme(-1)">❮</div>
+        <div style="display:flex; align-items:center; gap:60px; z-index:10;">
+            <div style="font-size:8rem; cursor:pointer; color:var(--accent);" onclick="changeTheme(-1)">❮</div>
             <div style="text-align:center">
-                <h2 id="theme-name" style="font-size: 4rem; margin: 20px 0;">Neon Pink</h2>
-                <button class="nav-button" style="border: none; background: var(--accent); color: black;" onclick="document.body.classList.remove('view-themes')">CONFIRM</button>
+                <h2 id="theme-name" style="font-size: 5rem; margin-bottom: 20px;">Neon Pink</h2>
+                <button class="nav-button" style="width: 200px; padding-left:0;" onclick="showPage('')">Confirm</button>
             </div>
-            <div class="arrow" onclick="changeTheme(1)">❯</div>
+            <div style="font-size:8rem; cursor:pointer; color:var(--accent);" onclick="changeTheme(1)">❯</div>
         </div>
     </div>
 
     <script>
+        let currentView = "";
+        let currentThemeClass = "";
+
+        function showPage(p) { 
+            currentView = p;
+            document.body.className = `${currentThemeClass} ${currentView}`.trim();
+        }
+
         const themes = [
-            {n:"Neon Pink", c:""}, 
-            {n:"Christmas", c:"theme-christmas"}, 
-            {n:"Cyber", c:"theme-cyber"}, 
-            {n:"Lava", c:"theme-lava"}, 
-            {n:"Toxic", c:"theme-toxic"}
+            {n:"Neon Pink", c:"", fx:"none"}, 
+            {n:"Christmas", c:"theme-christmas", fx:"snow"}, 
+            {n:"Lava", c:"theme-lava", fx:"embers"}, 
+            {n:"Cyber", c:"theme-cyber", fx:"matrix"},
+            {n:"Toxic", c:"theme-toxic", fx:"none"}
         ];
         let tIdx = 0;
 
         function changeTheme(dir) {
-            // Remove old theme
-            if (themes[tIdx].c) document.body.classList.remove(themes[tIdx].c);
-            
             tIdx = (tIdx + dir + themes.length) % themes.length;
-            
-            // Add new theme
-            if (themes[tIdx].c) document.body.classList.add(themes[tIdx].c);
-            document.getElementById('theme-name').innerText = themes[tIdx].n;
-            
-            // Save to browser memory
-            localStorage.setItem('dasher-theme', tIdx);
+            const theme = themes[tIdx];
+            currentThemeClass = theme.c;
+            document.body.className = `${currentThemeClass} ${currentView}`.trim();
+            document.getElementById('theme-name').innerText = theme.n;
+            initFX(theme.fx);
+            localStorage.setItem('dasher-theme-idx', tIdx);
         }
 
-        // Load saved theme on startup
-        window.onload = () => {
-            const saved = localStorage.getItem('dasher-theme');
-            if (saved) {
-                tIdx = parseInt(saved);
-                if (themes[tIdx].c) document.body.classList.add(themes[tIdx].c);
-                document.getElementById('theme-name').innerText = themes[tIdx].n;
+        // --- PROXY LOGIC ---
+        window.addEventListener('load', () => {
+            const form = document.getElementById('uv-form');
+            const address = document.getElementById('uv-address');
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('dasher-theme-idx');
+            if(savedTheme) { tIdx = parseInt(savedTheme); changeTheme(0); }
+
+            if (form) {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    let url = address.value.trim();
+                    if (!url.includes('.') || url.includes(' ')) {
+                        url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+                    } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                        url = 'https://' + url;
+                    }
+                    // Redirects using the Scramjet/UV prefix
+                    window.location.href = __uv_config.prefix + __uv_config.encodeUrl(url);
+                });
             }
-        };
+        });
+
+        // --- BACKGROUND FX ---
+        const canvas = document.getElementById('fx-canvas');
+        const ctx = canvas.getContext('2d');
+        let parts = []; let activeFX = "none";
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        function initFX(type) {
+            activeFX = type; parts = []; if(type === "none") return;
+            for(let i=0; i<80; i++) parts.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*3+1, v:Math.random()*2+1, m:Math.random()>0.5?"0":"1"});
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            if(activeFX !== "none") {
+                parts.forEach(p => {
+                    ctx.fillStyle = activeFX==="snow"?"white":(activeFX==="embers"?"orange":"#bc00ff");
+                    if(activeFX==="matrix") {
+                        ctx.font = "15px monospace"; ctx.fillText(p.m, p.x, p.y);
+                        p.y += p.v*3; if(p.y > canvas.height) p.y = -10;
+                    } else {
+                        p.y += (activeFX==="embers"?-p.v:p.v);
+                        if(p.y > canvas.height) p.y = -10; if(p.y < -10) p.y = canvas.height;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+                    }
+                });
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
