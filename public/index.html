@@ -3,168 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasher’s Unblocker</title>
+    <title>Dasher's Unblocker</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Staatliches&display=swap');
-
         :root {
-            --accent: #ff0055;
-            --bg: #0a0a0a;
-            --panel: #151515;
-            --text: #ffffff;
+            --neon-pink: #ff006e;
+            --dark-bg: #0a0a0a;
+            --panel-bg: #111111;
+            --text-glow: 0 0 10px rgba(255, 0, 110, 0.7);
         }
 
-        /* --- THEME CLASSES --- */
-        .theme-christmas { --accent: #ff3e3e; --panel: #145a32; --bg: #051a0d; }
-        .theme-cyber     { --accent: #bc00ff; --panel: #1a002e; --bg: #0a0014; }
-        .theme-lava      { --accent: #ff4400; --panel: #2e0d00; --bg: #140600; }
-
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: var(--bg); color: var(--text);
-            font-family: 'Staatliches', sans-serif; overflow: hidden;
-            transition: background-color 0.5s ease;
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', Impact, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* --- BACKGROUND DECO --- */
-        .faded-bar {
-            position: fixed; top: 0; left: 25%; width: 400px; height: 150%;
-            background: var(--accent); opacity: 0.1; transform: rotate(15deg) translateY(-20%);
-            z-index: -1; transition: background 0.5s ease;
+        /* Header Section */
+        header {
+            padding: 40px;
+            position: relative;
         }
 
-        /* --- BRANDING --- */
-        .branding {
-            position: absolute; top: 15%; left: 6%; z-index: 10;
-            animation: titleFloat 4s ease-in-out infinite;
-        }
-        @keyframes titleFloat { 0%, 100% { transform: rotate(-2deg) translateY(0px); } 50% { transform: rotate(-1deg) translateY(-15px); } }
-        
-        .branding h1 {
-            font-family: 'Black Ops One', system-ui; font-size: clamp(3rem, 8vw, 6rem); 
-            margin: 0; line-height: 0.9; text-transform: uppercase; color: var(--accent);
-            text-shadow: 4px 4px 0px #fff; 
+        h1 {
+            font-size: 5rem;
+            margin: 0;
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            line-height: 0.9;
+            text-shadow: 4px 4px 0px white, var(--text-glow);
+            letter-spacing: -2px;
         }
 
-        /* --- PAGE SYSTEM --- */
-        .page {
-            position: absolute; width: 100%; height: 100%;
-            transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            visibility: hidden;
-        }
-        /* Active page logic */
-        .active-page { visibility: visible; }
-        
-        #main-page { left: 0; align-items: flex-start; }
-        #library-page { left: 0; transform: translateY(100%); }
-        
-        /* Show Library Animation */
-        body.view-library #main-page { transform: translateY(-100%); }
-        body.view-library #library-page { transform: translateY(0); visibility: visible; }
-
-        /* --- SEARCH & GRID --- */
-        .library-header { width: 85%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; z-index: 30; }
-        
-        .search-bar {
-            background: rgba(255,255,255,0.05); border: 2px solid var(--accent);
-            padding: 12px 25px; color: white; font-family: 'Staatliches';
-            font-size: 1.5rem; width: 400px; border-radius: 50px; outline: none; transition: 0.3s;
-        }
-        .search-bar:focus { box-shadow: 0 0 15px var(--accent); background: rgba(255,255,255,0.1); }
-
-        .library-container {
-            width: 85%; height: 70%; display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 25px; padding: 20px; overflow-y: auto; 
-            background: rgba(0,0,0,0.3); border: 2px solid var(--accent); border-radius: 20px;
+        .subtitle {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 10px;
+            letter-spacing: 2px;
         }
 
-        .game-card { 
-            background: var(--panel); border: 1px solid rgba(255,255,255,0.1); 
-            height: 200px; border-radius: 12px; cursor: pointer; transition: 0.3s; 
-            overflow: hidden; display: flex; flex-direction: column;
+        /* Sidebar Navigation (The skewed buttons) */
+        nav {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 5px 15px var(--accent); }
-        
-        .nav-button {
-            background: var(--panel); color: white; border: none;
-            padding: 15px 40px; font-size: 1.5rem; font-family: 'Staatliches';
-            cursor: pointer; clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-            transition: 0.3s; border-right: 5px solid var(--accent);
-        }
-        .nav-button:hover { background: var(--accent); color: black; }
 
-        #fx-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: -1; }
+        .nav-item {
+            background: var(--panel-bg);
+            padding: 15px 60px 15px 40px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transform: skewX(-20deg) translateX(20px);
+            border-right: 5px solid var(--neon-pink);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--neon-pink);
+            transform: skewX(-20deg) translateX(10px);
+        }
+
+        .nav-item span {
+            transform: skewX(20deg);
+            display: inline-block;
+        }
+
+        /* Main Proxy UI */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .proxy-box {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .label {
+            font-family: monospace;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            background: black;
+            border: 2px solid var(--neon-pink);
+            padding: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        button#go-btn {
+            background: var(--neon-pink);
+            border: none;
+            color: white;
+            padding: 0 30px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        button#go-btn:hover {
+            filter: brightness(1.2);
+            box-shadow: var(--text-glow);
+        }
+
+        /* Result Frame */
+        iframe {
+            width: 100%;
+            height: 300px;
+            background: #eee;
+            border: none;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
-<body id="body-tag">
+<body>
 
-    <canvas id="fx-canvas"></canvas>
-    <div class="faded-bar"></div>
+    <header>
+        <h1>DASHER'S<br>HUB</h1>
+        <div class="subtitle">CREATED BY BROCAT25</div>
 
-    <div id="main-page" class="page active-page">
-        <div class="branding">
-            <h1>Dasher’s<br>Hub</h1>
-            <p style="letter-spacing: 2px; opacity: 0.8;">PREMIUM PROXY SYSTEM</p>
-            <button class="nav-button" onclick="showLibrary()">OPEN LIBRARY</button>
+        <nav>
+            <a class="nav-item"><span>LIBRARY</span></a>
+            <a class="nav-item"><span>PROXY</span></a>
+            <a class="nav-item"><span>THEMES</span></a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="proxy-box">
+            <span class="label">Proxy-container</span>
+            <form id="proxy-form" class="input-group">
+                <input type="text" id="url-input" placeholder="Enter URL here..." required>
+                <button type="submit" id="go-btn">Go</button>
+            </form>
+
+            <span class="label">ifproxyFrame src*</span>
+            <iframe id="proxy-frame" src="about:blank"></iframe>
         </div>
-    </div>
-
-    <div id="library-page" class="page">
-        <div class="library-header">
-            <input type="text" id="gameSearch" class="search-bar" placeholder="SEARCH GAMES..." onkeyup="filterGames()">
-            <button class="nav-button" style="font-size: 1rem;" onclick="hideLibrary()">BACK</button>
-        </div>
-        <div class="library-container" id="game-grid">
-            </div>
     </div>
 
     <script>
-        // --- DATA ---
-        const games = [
-            { name: "Slope", url: "https://example.com/slope", img: "https://img.v6p9d9t4.hwcdn.net/community/24835/1545129668/slope-screenshot-1.png" },
-            { name: "Retro Bowl", url: "#", img: "https://play-lh.googleusercontent.com/97S8p_3idA5Y_99U69H7MskH_29399S_X3C-f6_7S5" },
-            { name: "Minecraft", url: "#", img: "https://m.media-amazon.com/images/I/61S3O9X9HLL.png" },
-            { name: "1v1.lol", url: "#", img: "https://play-lh.googleusercontent.com/S67_F6f9q-m_8Xh9" }
-        ];
+        const form = document.getElementById('proxy-form');
+        const input = document.getElementById('url-input');
+        const frame = document.getElementById('proxy-frame');
 
-        // --- NAVIGATION ---
-        function showLibrary() { document.body.classList.add('view-library'); }
-        function hideLibrary() { document.body.classList.remove('view-library'); }
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Standard Scramjet/Ultraviolet pattern:
+            // This assumes your service worker is registered at /sw.js
+            const url = input.value.trim();
+            if (!url) return;
 
-        // --- SEARCH ENGINE ---
-        function renderGames(filteredList) {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = filteredList.map(game => `
-                <div class="game-card" onclick="window.open('${game.url}', '_blank')">
-                    <div style="flex:1; background: url('${game.img}') center/cover;"></div>
-                    <div style="padding: 10px; text-align: center; background: #000;">${game.name}</div>
-                </div>
-            `).join('');
-        }
+            // Basic check to see if it's a URL or search
+            let targetUrl = url;
+            if (!url.startsWith('http')) {
+                targetUrl = 'https://www.google.com/search?q=' + url;
+            }
 
-        function filterGames() {
-            const searchTerm = document.getElementById('gameSearch').value.toLowerCase();
-            const filtered = games.filter(g => g.name.toLowerCase().includes(searchTerm));
-            renderGames(filtered);
-        }
-
-        // Initialize
-        renderGames(games);
-
-        // Simple Background FX
-        const canvas = document.getElementById('fx-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            // Add custom FX logic here if desired
-            requestAnimationFrame(animate);
-        }
-        animate();
+            // Encode the URL using Scramjet's default (plain or xor)
+            // Note: Update __scramjet_config if you use a custom prefix
+            frame.src = window.location.origin + '/service/' + btoa(targetUrl);
+        });
     </script>
 </body>
 </html>
