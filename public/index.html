@@ -1,196 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasher's Unblocker</title>
-    <style>
-        :root {
-            --neon-pink: #ff006e;
-            --dark-bg: #0a0a0a;
-            --panel-bg: #111111;
-            --text-glow: 0 0 10px rgba(255, 0, 110, 0.7);
-        }
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+		/>
+		<title>Scramjet</title>
 
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Segoe UI', Impact, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+		<link rel="shortcut icon" content="favicon.webp" />
+	
+		<script src="/scram/scramjet.all.js"></script>
+		<script src="/baremux/index.js"></script>
+		
+		<link rel="stylesheet" href="index.css" />
+		<script src="register-sw.js" defer></script>
+		<script src="search.js" defer></script>
+		<script src="index.js" defer></script>
+	</head>
 
-        /* Header Section */
-        header {
-            padding: 40px;
-            position: relative;
-        }
+	<body>
+		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
+			<img class="logo" src="sj.png" alt="Scramjet" />
+			<h1>Scramjet | MW</h1>
+		</div>
+		<div class="flex-center desc left-margin">
+			<p>
+				Scramjet is an experimental interception based web proxy designed to
+				evade internet censorship, bypass arbitrary web browser restrictions and
+				innovate web proxy technologies.
+			</p>
+		</div>
 
-        h1 {
-            font-size: 5rem;
-            margin: 0;
-            color: var(--neon-pink);
-            text-transform: uppercase;
-            line-height: 0.9;
-            text-shadow: 4px 4px 0px white, var(--text-glow);
-            letter-spacing: -2px;
-        }
-
-        .subtitle {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 10px;
-            letter-spacing: 2px;
-        }
-
-        /* Sidebar Navigation (The skewed buttons) */
-        nav {
-            position: absolute;
-            top: 40px;
-            right: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .nav-item {
-            background: var(--panel-bg);
-            padding: 15px 60px 15px 40px;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            transform: skewX(-20deg) translateX(20px);
-            border-right: 5px solid var(--neon-pink);
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .nav-item:hover {
-            background: var(--neon-pink);
-            transform: skewX(-20deg) translateX(10px);
-        }
-
-        .nav-item span {
-            transform: skewX(20deg);
-            display: inline-block;
-        }
-
-        /* Main Proxy UI */
-        .container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .proxy-box {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .label {
-            font-family: monospace;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input[type="text"] {
-            flex-grow: 1;
-            background: black;
-            border: 2px solid var(--neon-pink);
-            padding: 12px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        button#go-btn {
-            background: var(--neon-pink);
-            border: none;
-            color: white;
-            padding: 0 30px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        button#go-btn:hover {
-            filter: brightness(1.2);
-            box-shadow: var(--text-glow);
-        }
-
-        /* Result Frame */
-        iframe {
-            width: 100%;
-            height: 300px;
-            background: #eee;
-            border: none;
-            margin-top: 10px;
-        }
-
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>DASHER'S<br>HUB</h1>
-        <div class="subtitle">CREATED BY BROCAT25</div>
-
-        <nav>
-            <a class="nav-item"><span>LIBRARY</span></a>
-            <a class="nav-item"><span>PROXY</span></a>
-            <a class="nav-item"><span>THEMES</span></a>
-        </nav>
-    </header>
-
-    <div class="container">
-        <div class="proxy-box">
-            <span class="label">Proxy-container</span>
-            <form id="proxy-form" class="input-group">
-                <input type="text" id="url-input" placeholder="Enter URL here..." required>
-                <button type="submit" id="go-btn">Go</button>
-            </form>
-
-            <span class="label">ifproxyFrame src*</span>
-            <iframe id="proxy-frame" src="about:blank"></iframe>
-        </div>
-    </div>
-
-    <script>
-        const form = document.getElementById('proxy-form');
-        const input = document.getElementById('url-input');
-        const frame = document.getElementById('proxy-frame');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Standard Scramjet/Ultraviolet pattern:
-            // This assumes your service worker is registered at /sw.js
-            const url = input.value.trim();
-            if (!url) return;
-
-            // Basic check to see if it's a URL or search
-            let targetUrl = url;
-            if (!url.startsWith('http')) {
-                targetUrl = 'https://www.google.com/search?q=' + url;
-            }
-
-            // Encode the URL using Scramjet's default (plain or xor)
-            // Note: Update __scramjet_config if you use a custom prefix
-            frame.src = window.location.origin + '/service/' + btoa(targetUrl);
-        });
-    </script>
-</body>
+		<form id="sj-form" class="flex-center">
+			<input
+				id="sj-search-engine"
+				value="https://www.google.com/search?q=%s"
+				type="hidden"
+			/>
+			<input id="sj-address" type="text" placeholder="Search the web freely" />
+		</form>
+		<div class="desc left-margin">
+			<p id="sj-error"></p>
+			<pre id="sj-error-code"></pre>
+		</div>
+		<footer>
+			<div>
+				<a
+					title="The Mercury Workshop GitHub organization"
+					href="https://github.com/MercuryWorkshop"
+					>Mercury Workshop</a
+				>
+				<a
+					title="The example demo app for Scramjet"
+					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
+					>GitHub</a
+				>
+				<a title="License information" href="credits.html">Credits</a>
+			</div>
+			<div>
+				<span>Scramjet &copy; MW 2025</span>
+			</div>
+		</footer>
+	</body>
 </html>
