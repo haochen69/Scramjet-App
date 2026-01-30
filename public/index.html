@@ -161,16 +161,24 @@
 
     <iframe id="content-frame"></iframe>
 
-    <script>
-        // Simple logic to show the frame once the form is submitted
-        const form = document.getElementById('sj-form');
-        form.addEventListener('submit', () => {
-            // Give the Scramjet scripts a tiny moment to process the URL
-            setTimeout(() => {
-                document.body.classList.add('is-active');
-            }, 100);
-        });
-    </script>
+<script>
+    const form = document.getElementById('sj-form');
+    const addressInput = document.getElementById('sj-address');
+    const frame = document.getElementById('content-frame');
+
+    form.addEventListener('submit', (event) => {
+        // 1. STOP the page from reloading/flashing
+        event.preventDefault(); 
+
+        // 2. Show the iframe and hide the UI
+        document.body.classList.add('is-active');
+
+        // 3. Force the proxy logic to run (this depends on your index.js)
+        // If your index.js doesn't automatically handle the iframe, 
+        // you may need to call your proxy function here, for example:
+        // __uv_config.prefix + __uv_config.encodeUrl(addressInput.value);
+    });
+</script>
 
 </body>
 </html>
