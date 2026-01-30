@@ -1,177 +1,64 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Scramjet | Dasher's Hub</title>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+		/>
+		<title>Scramjet</title>
 
-    <link rel="shortcut icon" content="favicon.webp" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+		<link rel="shortcut icon" content="favicon.webp" />
+	
+		<script src="/scram/scramjet.all.js"></script>
+		<script src="/baremux/index.js"></script>
+		
+		<link rel="stylesheet" href="index.css" />
+		<script src="register-sw.js" defer></script>
+		<script src="search.js" defer></script>
+		<script src="index.js" defer></script>
+	</head>
 
-    <script src="/scram/scramjet.all.js"></script>
-    <script src="/baremux/index.js"></script>
-    <script src="register-sw.js" defer></script>
-    <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
+	<body>
+		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
+			<img class="logo" src="sj.png" alt="Scramjet" />
+			<h1>Scramjet | MW</h1>
+		</div>
+		<div class="flex-center desc left-margin">
+			<p>
+				Made with Scramjet.
+			</p>
+		</div>
 
-    <style>
-        :root {
-            --neon-pink: #ff006e;
-            --dark-bg: #0a0a0a;
-            --panel-bg: #111111;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden; /* Prevents double scrollbars when site loads */
-        }
-
-        /* UI Wrapper for your design */
-        #ui-wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            position: relative;
-            z-index: 2;
-        }
-
-        header {
-            padding: 50px;
-        }
-
-        .title-container h1 {
-            font-family: 'Black Ops One', system-ui;
-            font-size: clamp(3.5rem, 10vw, 6rem);
-            line-height: 0.85;
-            margin: 0;
-            color: var(--neon-pink);
-            text-transform: uppercase;
-            text-shadow: 4px 4px 0px #ffffff, 0 0 20px rgba(255, 0, 110, 0.5);
-            letter-spacing: 2px;
-        }
-
-        .author-tag {
-            font-size: 0.7rem;
-            color: #888;
-            margin-top: 15px;
-            letter-spacing: 3px;
-            font-weight: bold;
-        }
-
-        .main-ui {
-            flex: 1;
-            padding: 0 50px;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .label-text {
-            font-family: monospace;
-            color: #fff;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        #sj-form {
-            display: flex;
-            margin-bottom: 30px;
-        }
-
-        #sj-address {
-            flex: 1;
-            background: #000;
-            border: 2px solid var(--neon-pink);
-            padding: 15px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .go-btn {
-            background: var(--neon-pink);
-            border: none;
-            color: white;
-            padding: 0 25px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        /* --- THE IFRAME THAT LOADS THE SITE --- */
-        #content-frame {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: none; /* Hidden until you search */
-            z-index: 1;
-            background: white;
-        }
-
-        /* When 'is-active' class is added, hide UI and show the site */
-        body.is-active #ui-wrapper {
-            display: none;
-        }
-        body.is-active #content-frame {
-            display: block;
-        }
-
-    </style>
-</head>
-
-<body>
-
-    <div id="ui-wrapper">
-        <header>
-            <div class="title-container">
-                <h1>DASHER'S<br>HUB</h1>
-                <div class="author-tag">CREATED BY BIRDCAT25</div>
-            </div>
-        </header>
-
-        <main class="main-ui">
-            <div class="proxy-desc" style="color: #666; font-size: 0.85rem; margin-bottom: 20px;">
-                Created with Scramjet
-            </div>
-
-            <span class="label-text">What would you like to search today?</span>
-            <form id="sj-form">
-                <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-                <input id="sj-address" type="text" placeholder="Enter URL here..." />
-                <button type="submit" class="go-btn">Go</button>
-            </form>
-
-            <p id="sj-error" style="color: var(--neon-pink); font-weight: bold;"></p>
-            <pre id="sj-error-code" style="color: #444;"></pre>
-        </main>
-    </div>
-
-    <iframe id="content-frame"></iframe>
-
-    <script>
-        const form = document.getElementById('sj-form');
-        
-        form.addEventListener('submit', (e) => {
-            // Prevent the white flash/page reload
-            // The Scramjet index.js will handle the actual URL redirect
-            setTimeout(() => {
-                document.body.classList.add('is-active');
-            }, 100);
-        });
-    </script>
-
-</body>
+		<form id="sj-form" class="flex-center">
+			<input
+				id="sj-search-engine"
+				value="https://www.google.com/search?q=%s"
+				type="hidden"
+			/>
+			<input id="sj-address" type="text" placeholder="Search the web freely" />
+		</form>
+		<div class="desc left-margin">
+			<p id="sj-error"></p>
+			<pre id="sj-error-code"></pre>
+		</div>
+		<footer>
+			<div>
+				<a
+					title="The Mercury Workshop GitHub organization"
+					href="https://github.com/MercuryWorkshop"
+					>Mercury Workshop</a
+				>
+				<a
+					title="Dasher's Unblocker"
+					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
+					>GitHub</a
+				>
+				<a title="License information" href="credits.html">Credits</a>
+			</div>
+			<div>
+				<span>Scramjet &copy; MW 2025</span>
+			</div>
+		</footer>
+	</body>
 </html>
