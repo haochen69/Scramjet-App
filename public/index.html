@@ -32,16 +32,16 @@
             background-color: var(--dark-bg);
             color: white;
             font-family: 'Segoe UI', sans-serif;
-            overflow: hidden; /* Prevent double scrollbars */
+            overflow: hidden; /* Prevents double scrollbars when site loads */
         }
 
-        /* --- UI OVERLAY --- */
+        /* UI Wrapper for your design */
         #ui-wrapper {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             position: relative;
-            z-index: 2; /* Keep UI above the frame initially */
+            z-index: 2;
         }
 
         header {
@@ -108,7 +108,7 @@
             cursor: pointer;
         }
 
-        /* --- FULLSCREEN FRAME --- */
+        /* --- THE IFRAME THAT LOADS THE SITE --- */
         #content-frame {
             position: fixed;
             top: 0;
@@ -116,12 +116,12 @@
             width: 100%;
             height: 100%;
             border: none;
-            display: none; /* Hidden until search */
+            display: none; /* Hidden until you search */
             z-index: 1;
             background: white;
         }
 
-        /* Logic to hide UI when frame is active */
+        /* When 'is-active' class is added, hide UI and show the site */
         body.is-active #ui-wrapper {
             display: none;
         }
@@ -161,24 +161,17 @@
 
     <iframe id="content-frame"></iframe>
 
-<script>
-    const form = document.getElementById('sj-form');
-    const addressInput = document.getElementById('sj-address');
-    const frame = document.getElementById('content-frame');
-
-    form.addEventListener('submit', (event) => {
-        // 1. STOP the page from reloading/flashing
-        event.preventDefault(); 
-
-        // 2. Show the iframe and hide the UI
-        document.body.classList.add('is-active');
-
-        // 3. Force the proxy logic to run (this depends on your index.js)
-        // If your index.js doesn't automatically handle the iframe, 
-        // you may need to call your proxy function here, for example:
-        // __uv_config.prefix + __uv_config.encodeUrl(addressInput.value);
-    });
-</script>
+    <script>
+        const form = document.getElementById('sj-form');
+        
+        form.addEventListener('submit', (e) => {
+            // Prevent the white flash/page reload
+            // The Scramjet index.js will handle the actual URL redirect
+            setTimeout(() => {
+                document.body.classList.add('is-active');
+            }, 100);
+        });
+    </script>
 
 </body>
 </html>
