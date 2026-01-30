@@ -1,94 +1,176 @@
-<style>
-    /* ... (keep your existing @import and :root variables) ... */
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Scramjet | Dasher's Hub</title>
 
-    body, html {
-        margin: 0; padding: 0; width: 100%; height: 100%;
-        background-color: var(--bg); color: var(--text);
-        font-family: 'Staatliches', sans-serif; overflow: hidden;
-        transition: background-color 0.5s ease;
-    }
+    <link rel="shortcut icon" content="favicon.webp" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
 
-    /* Fixed the page layout to be more "Normal" */
-    .page {
-        position: absolute; 
-        width: 100%; 
-        height: 100%;
-        transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; /* This centers the content vertically */
-    }
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="register-sw.js" defer></script>
+    <script src="search.js" defer></script>
+    <script src="index.js" defer></script>
 
-    #main-page { left: 0; } /* Removed align-items: flex-start */
-    #library-page { left: 100%; }
-    #theme-page { left: 200%; }
+    <style>
+        :root {
+            --neon-pink: #ff006e;
+            --dark-bg: #0a0a0a;
+            --panel-bg: #111111;
+        }
 
-    /* Centered Branding */
-    .branding {
-        text-align: center;
-        margin-bottom: 40px;
-        z-index: 10;
-        animation: titleFloat 4s ease-in-out infinite;
-    }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; /* Prevent double scrollbars */
+        }
 
-    .branding h1 {
-        font-family: 'Black Ops One', system-ui; 
-        font-size: clamp(3rem, 12vw, 6rem); 
-        margin: 0; 
-        line-height: 0.9; 
-        text-transform: uppercase; 
-        color: var(--accent);
-        text-shadow: 4px 4px 0px #fff; 
-        transition: color 0.5s ease;
-    }
+        /* --- UI OVERLAY --- */
+        #ui-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            z-index: 2; /* Keep UI above the frame initially */
+        }
 
-    /* Standardized Nav Container */
-    .nav-container {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        z-index: 20;
-    }
+        header {
+            padding: 50px;
+        }
 
-    .nav-button {
-        background: var(--panel); 
-        color: white; 
-        border: none;
-        padding: 15px 40px; 
-        font-size: 1.5rem; 
-        font-family: 'Staatliches', sans-serif;
-        cursor: pointer; 
-        clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-        transition: all 0.3s ease; 
-        width: 240px; 
-        text-align: center;
-        border-right: 6px solid var(--accent);
-    }
+        .title-container h1 {
+            font-family: 'Black Ops One', system-ui;
+            font-size: clamp(3.5rem, 10vw, 6rem);
+            line-height: 0.85;
+            margin: 0;
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0px #ffffff, 0 0 20px rgba(255, 0, 110, 0.5);
+            letter-spacing: 2px;
+        }
 
-    .nav-button:hover { 
-        width: 260px; 
-        background: var(--accent); 
-        color: black; 
-    }
+        .author-tag {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 15px;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
 
-    /* ... (keep the rest of your library and theme slider CSS) ... */
-</style>
+        .main-ui {
+            flex: 1;
+            padding: 0 50px;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-<body id="body-tag" class="theme-carrot">
-    <canvas id="fx-canvas"></canvas>
-    <div class="faded-bar"></div>
+        .label-text {
+            font-family: monospace;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
 
-    <div id="main-page" class="page">
-        <div class="branding">
-            <h1>Dasher’s<br>Hub</h1>
-            <p style="letter-spacing: 5px; margin-top: 10px;">V2: Carrot Powered</p>
-        </div>
-        
-        <nav class="nav-container">
-            <button class="nav-button" onclick="showPage('view-library')">Library</button>
-            <button class="nav-button" onclick="showPage('view-themes')">Themes</button>
-        </nav>
+        #sj-form {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        #sj-address {
+            flex: 1;
+            background: #000;
+            border: 2px solid var(--neon-pink);
+            padding: 15px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .go-btn {
+            background: var(--neon-pink);
+            border: none;
+            color: white;
+            padding: 0 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        /* --- FULLSCREEN FRAME --- */
+        #content-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none; /* Hidden until search */
+            z-index: 1;
+            background: white;
+        }
+
+        /* Logic to hide UI when frame is active */
+        body.is-active #ui-wrapper {
+            display: none;
+        }
+        body.is-active #content-frame {
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="ui-wrapper">
+        <header>
+            <div class="title-container">
+                <h1>DASHER'S<br>HUB</h1>
+                <div class="author-tag">CREATED BY BIRDCAT25</div>
+            </div>
+        </header>
+
+        <main class="main-ui">
+            <div class="proxy-desc" style="color: #666; font-size: 0.85rem; margin-bottom: 20px;">
+                Created with Scramjet
+            </div>
+
+            <span class="label-text">What would you like to search today?</span>
+            <form id="sj-form">
+                <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+                <input id="sj-address" type="text" placeholder="Enter URL here..." />
+                <button type="submit" class="go-btn">Go</button>
+            </form>
+
+            <p id="sj-error" style="color: var(--neon-pink); font-weight: bold;"></p>
+            <pre id="sj-error-code" style="color: #444;"></pre>
+        </main>
     </div>
 
-    </body>
+    <iframe id="content-frame"></iframe>
+
+    <script>
+        // Simple logic to show the frame once the form is submitted
+        const form = document.getElementById('sj-form');
+        form.addEventListener('submit', () => {
+            // Give the Scramjet scripts a tiny moment to process the URL
+            setTimeout(() => {
+                document.body.classList.add('is-active');
+            }, 100);
+        });
+    </script>
+
+</body>
+</html>
