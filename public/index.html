@@ -1,163 +1,94 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Scramjet | Dasher's Hub</title>
+<style>
+    /* ... (keep your existing @import and :root variables) ... */
 
-    <link rel="shortcut icon" content="favicon.webp" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    body, html {
+        margin: 0; padding: 0; width: 100%; height: 100%;
+        background-color: var(--bg); color: var(--text);
+        font-family: 'Staatliches', sans-serif; overflow: hidden;
+        transition: background-color 0.5s ease;
+    }
 
-    <script src="/scram/scramjet.all.js"></script>
-    <script src="/baremux/index.js"></script>
-    <script src="register-sw.js" defer></script>
-    <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
+    /* Fixed the page layout to be more "Normal" */
+    .page {
+        position: absolute; 
+        width: 100%; 
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; /* This centers the content vertically */
+    }
 
-    <style>
-        :root {
-            --neon-pink: #ff006e;
-            --dark-bg: #0a0a0a;
-            --panel-bg: #111111;
-        }
+    #main-page { left: 0; } /* Removed align-items: flex-start */
+    #library-page { left: 100%; }
+    #theme-page { left: 200%; }
 
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
+    /* Centered Branding */
+    .branding {
+        text-align: center;
+        margin-bottom: 40px;
+        z-index: 10;
+        animation: titleFloat 4s ease-in-out infinite;
+    }
 
-        /* --- HEADER AREA --- */
-        header {
-            padding: 50px;
-            position: relative;
-        }
+    .branding h1 {
+        font-family: 'Black Ops One', system-ui; 
+        font-size: clamp(3rem, 12vw, 6rem); 
+        margin: 0; 
+        line-height: 0.9; 
+        text-transform: uppercase; 
+        color: var(--accent);
+        text-shadow: 4px 4px 0px #fff; 
+        transition: color 0.5s ease;
+    }
 
-        .title-container h1 {
-            font-family: 'Black Ops One', system-ui;
-            font-size: clamp(3.5rem, 10vw, 6rem);
-            line-height: 0.85;
-            margin: 0;
-            color: var(--neon-pink);
-            text-transform: uppercase;
-            /* The double-layer shadow from your image */
-            text-shadow: 4px 4px 0px #ffffff, 0 0 20px rgba(255, 0, 110, 0.5);
-            letter-spacing: 2px;
-        }
+    /* Standardized Nav Container */
+    .nav-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 20;
+    }
 
-        .author-tag {
-            font-size: 0.7rem;
-            color: #888;
-            margin-top: 15px;
-            letter-spacing: 3px;
-            font-weight: bold;
-        }
+    .nav-button {
+        background: var(--panel); 
+        color: white; 
+        border: none;
+        padding: 15px 40px; 
+        font-size: 1.5rem; 
+        font-family: 'Staatliches', sans-serif;
+        cursor: pointer; 
+        clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+        transition: all 0.3s ease; 
+        width: 240px; 
+        text-align: center;
+        border-right: 6px solid var(--accent);
+    }
 
-        /* --- PROXY INTERFACE --- */
-        .main-ui {
-            flex: 1;
-            padding: 0 50px;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+    .nav-button:hover { 
+        width: 260px; 
+        background: var(--accent); 
+        color: black; 
+    }
 
-        .label-text {
-            font-family: monospace;
-            color: #fff;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
+    /* ... (keep the rest of your library and theme slider CSS) ... */
+</style>
 
-        #sj-form {
-            display: flex;
-            margin-bottom: 30px;
-        }
+<body id="body-tag" class="theme-carrot">
+    <canvas id="fx-canvas"></canvas>
+    <div class="faded-bar"></div>
 
-        #sj-address {
-            flex: 1;
-            background: #000;
-            border: 2px solid var(--neon-pink);
-            padding: 15px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        #sj-address:focus {
-            box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
-        }
-
-        .go-btn {
-            background: var(--neon-pink);
-            border: none;
-            color: white;
-            padding: 0 25px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .proxy-desc {
-            color: #666;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        /* --- FOOTER --- */
-        footer {
-            padding: 30px 50px;
-            font-size: 0.75rem;
-            color: #444;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        footer a { color: #555; text-decoration: none; margin-right: 15px; }
-        footer a:hover { color: var(--neon-pink); }
-
-    </style>
-</head>
-
-<body>
-
-    <header>
-        <div class="title-container">
-            <h1>DASHER'S<br>HUB</h1>
-            <div class="author-tag">CREATED BY BIRDCAT25</div>
+    <div id="main-page" class="page">
+        <div class="branding">
+            <h1>Dasher’s<br>Hub</h1>
+            <p style="letter-spacing: 5px; margin-top: 10px;">V2: Carrot Powered</p>
         </div>
+        
+        <nav class="nav-container">
+            <button class="nav-button" onclick="showPage('view-library')">Library</button>
+            <button class="nav-button" onclick="showPage('view-themes')">Themes</button>
+        </nav>
+    </div>
 
-    </header>
-
-    <main class="main-ui">
-        <div class="proxy-desc">
-            Created with Scramjet
-        </div>
-
-        <span class="label-text">What would you like to search today?</span>
-        <form id="sj-form">
-            <input
-                id="sj-search-engine"
-                value="https://www.google.com/search?q=%s"
-                type="hidden"
-            />
-            <input id="sj-address" type="text" placeholder="Enter URL here..." />
-            <button type="submit" class="go-btn">Go</button>
-        </form>
-
-        <p id="sj-error" style="color: var(--neon-pink); font-weight: bold;"></p>
-        <pre id="sj-error-code" style="color: #444;"></pre>
-    </main>
-
-</body>
-</html>
+    </body>
